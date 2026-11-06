@@ -114,6 +114,27 @@ private fun Choice(text: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
+private fun BreadthBox(label: String, value: Int, color: Color, modifier: Modifier) {
+    Column(
+        modifier.background(color.copy(alpha = 0.12f), RoundedCornerShape(10.dp))
+            .padding(vertical = 6.dp, horizontal = 10.dp),
+    ) {
+        Text(label, fontSize = 11.sp, color = color)
+        Text("$value", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = color)
+    }
+}
+
+@Composable
+private fun BreadthRow(b: Breadth?) {
+    if (b == null) return
+    Row(Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        BreadthBox("Advances", b.advances, GREEN, Modifier.weight(1f))
+        BreadthBox("Declines", b.declines, RED, Modifier.weight(1f))
+        BreadthBox("Unchanged", b.unchanged, GRAY, Modifier.weight(1f))
+    }
+}
+
+@Composable
 private fun RankList(title: String, ranks: List<StrikeRank>) {
     Text(title, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, modifier = Modifier.padding(top = 10.dp))
     if (ranks.isEmpty()) {
@@ -228,6 +249,7 @@ private fun CardView(r: Analysis) {
                 }
                 Pill(r.bias.name, biasColor(r.bias))
             }
+            BreadthRow(r.breadth)
             MetricGrid(
                 listOf(
                     "Underlying" to f2(r.spot),
@@ -272,6 +294,7 @@ fun IntradayScreen(st: UiState, selectedKey: String?, onSelect: (String) -> Unit
         Text("${r.label} · Expiry ${r.expiryText}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(6.dp))
         Pill(setup.setup, setupColor(setup.setup))
+        BreadthRow(r.breadth)
         Spacer(Modifier.height(8.dp))
         MetricGrid(
             listOf(

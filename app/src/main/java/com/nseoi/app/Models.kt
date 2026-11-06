@@ -32,6 +32,17 @@ data class InstrumentSpec(val symbol: String, val expiry: LocalDate?) {
     val key: String get() = if (expiry != null) "NSE:$symbol@${fmtDate(expiry)}" else "NSE:$symbol"
 }
 
+data class Breadth(val advances: Int, val declines: Int, val unchanged: Int)
+
+// NSE index names used for the advances / declines figures (NIFTYFPI has no such index)
+val BREADTH_INDEX_NAMES = mapOf(
+    "NIFTY" to "NIFTY 50",
+    "BANKNIFTY" to "NIFTY BANK",
+    "FINNIFTY" to "NIFTY FINANCIAL SERVICES",
+    "MIDCPNIFTY" to "NIFTY MIDCAP SELECT",
+    "NIFTYNXT50" to "NIFTY NEXT 50",
+)
+
 data class Snapshot(
     val spec: InstrumentSpec,
     val expiry: LocalDate,

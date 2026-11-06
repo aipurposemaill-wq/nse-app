@@ -125,7 +125,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     val histKey = "${spec.symbol} ${fmtDate(snap.expiry)}"
                     val hist = pcrHistory.getOrPut(histKey) { mutableListOf() }
                     val previous = hist.lastOrNull { it.first != snap.nseTimestamp }?.second
-                    val analysis = analyze(snap, previous)
+                    val breadth = try {
+                        client.getBreadth(spec.symbol)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        null
+                    }
+                    val analysis = analyze(snap, previous).copy(
+                        breadth = breadth ?: _state.value.results.firstOrNull { it.key == spec.key }?.breadth,
+                    )
                     if (hist.isEmpty() || hist.last().first != snap.nseTimestamp) {
                         hist.add(Pair(snap.nseTimestamp, analysis.stats.pcr))
                     }

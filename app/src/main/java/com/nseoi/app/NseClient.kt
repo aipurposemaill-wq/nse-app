@@ -158,6 +158,17 @@ class NseClient {
         )
         return parseChain(payload, spec, expiry, expiries, local)
     }
+
+    suspend fun getBreadth(symbol: String): Breadth? {
+        val indexName = BREADTH_INDEX_NAMES[symbol] ?: return null
+        val json = getJson("/api/equity-stockIndices", mapOf("index" to indexName))
+        val adv = json.optJSONObject("advance") ?: return null
+        return Breadth(
+            num(adv.opt("advances")).toInt(),
+            num(adv.opt("declines")).toInt(),
+            num(adv.opt("unchanged")).toInt(),
+        )
+    }
 }
 
 fun selectExpiry(available: List<LocalDate>, spec: InstrumentSpec, mode: String, today: LocalDate): LocalDate {
