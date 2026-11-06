@@ -125,8 +125,13 @@ private fun BreadthBox(label: String, value: Int, color: Color, modifier: Modifi
 }
 
 @Composable
-private fun BreadthRow(b: Breadth?) {
-    if (b == null) return
+private fun BreadthRow(b: Breadth?, note: String? = null) {
+    if (b == null) {
+        if (note != null) {
+            Text("Advances/Declines unavailable: $note", fontSize = 11.sp, color = RED, modifier = Modifier.padding(top = 8.dp))
+        }
+        return
+    }
     Row(Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         BreadthBox("Advances", b.advances, GREEN, Modifier.weight(1f))
         BreadthBox("Declines", b.declines, RED, Modifier.weight(1f))
@@ -158,7 +163,7 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
 
     Column(Modifier.fillMaxSize()) {
         Text(
-            "📈 NSE Option Chain Analytics", fontSize = 18.sp, fontWeight = FontWeight.Bold,
+            "📈 NSE Option Chain Analytics  v1.1", fontSize = 18.sp, fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 6.dp),
         )
         TabRow(selectedTabIndex = tab) {
@@ -249,7 +254,7 @@ private fun CardView(r: Analysis) {
                 }
                 Pill(r.bias.name, biasColor(r.bias))
             }
-            BreadthRow(r.breadth)
+            BreadthRow(r.breadth, r.breadthNote)
             MetricGrid(
                 listOf(
                     "Underlying" to f2(r.spot),
@@ -294,7 +299,7 @@ fun IntradayScreen(st: UiState, selectedKey: String?, onSelect: (String) -> Unit
         Text("${r.label} · Expiry ${r.expiryText}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(6.dp))
         Pill(setup.setup, setupColor(setup.setup))
-        BreadthRow(r.breadth)
+        BreadthRow(r.breadth, r.breadthNote)
         Spacer(Modifier.height(8.dp))
         MetricGrid(
             listOf(

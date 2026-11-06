@@ -42,6 +42,7 @@ data class Analysis(
     val peAdds: List<StrikeRank>,
     val setup: SetupResult,
     val breadth: Breadth? = null,
+    val breadthNote: String? = null,
 ) {
     val key: String get() = spec.key
     val label: String get() = spec.symbol

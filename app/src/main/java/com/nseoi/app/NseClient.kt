@@ -162,7 +162,8 @@ class NseClient {
     suspend fun getBreadth(symbol: String): Breadth? {
         val indexName = BREADTH_INDEX_NAMES[symbol] ?: return null
         val json = getJson("/api/equity-stockIndices", mapOf("index" to indexName))
-        val adv = json.optJSONObject("advance") ?: return null
+        val adv = json.optJSONObject("advance")
+            ?: throw NseException("No 'advance' field in NSE reply. Keys: ${json.keys().asSequence().take(8).toList()}")
         return Breadth(
             num(adv.opt("advances")).toInt(),
             num(adv.opt("declines")).toInt(),
